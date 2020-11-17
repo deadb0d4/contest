@@ -1,0 +1,3 @@
+nnoremap <leader>q <Esc>:xa<CR>
+nnoremap <leader>s <Esc>:w<CR><C-z>
+nnoremap <leader>B <Esc>:w<CR>:!./run.py %<CR>

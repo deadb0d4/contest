@@ -1,0 +1,6 @@
+main.cpp
+easy.py
+.*
+!.gitignore
+test/*
+bin/*

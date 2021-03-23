@@ -1,5 +1,7 @@
 # Notes to keep in mind
 
+**TODO:** Start new notes in a more helpful format
+
 ## General or ad hoc
 
 - Define priorities for greedy algorithms accurately

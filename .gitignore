@@ -1,6 +1,7 @@
 main.cpp
 easy.py
 .*
+!.vscode
 !.gitignore
 test/*
 bin/*

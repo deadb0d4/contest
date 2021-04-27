@@ -94,7 +94,14 @@
     "variant": "cpp",
     "__functional_03": "cpp",
     "filesystem": "cpp",
-    "__memory": "cpp"
+    "__memory": "cpp",
+    "*.tcc": "cpp",
+    "concepts": "cpp",
+    "cuchar": "cpp",
+    "memory_resource": "cpp",
+    "numbers": "cpp",
+    "ranges": "cpp",
+    "stop_token": "cpp"
   },
   "python.pythonPath": "/usr/bin/python3",
   "editor.quickSuggestions": false,

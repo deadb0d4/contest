@@ -2,6 +2,34 @@
 
 using namespace std;
 
+// Sliding set approach to closest pair of points
+// author: bicsi
+int64_t ClosestDistance(vector<pair<int64_t, int64_t>>& points) {
+  sort(begin(points), end(points));
+  int64_t curr_answer = 1'000'000'000'000'000'016;
+  int l = 0;
+  set<pair<int64_t, int64_t>> bag;
+  for (int r = 0; r < len; ++r) {
+    int64_t d = ceil(sqrt(curr_answer));
+    while (points[r].first - points[l].first > d) {
+      bag.erase({points[l].second, points[l].first});
+      ++l;
+    }
+    auto b = bag.lower_bound({points[r].second - d, points[r].first});
+    auto e = bag.upper_bound({points[r].second + d, points[r].first});
+    // this is on average linear on (e - b)
+    // but in a rectangle there is only a constant number of points
+    // due to `curr_answer` distance bound
+    for (auto it = b; it != e; ++it) {
+      int64_t dx = it->second - points[r].first;
+      int64_t dy = it->first - points[r].second;
+      curr_answer = min(curr_answer, dx * dx + dy * dy);
+    }
+    bag.insert({points[r].second, points[r].first});
+  }
+  return curr_answer;
+}
+
 // Multi-dimensional vector for rare occasions.
 template <class T, size_t n>
 struct VecS {

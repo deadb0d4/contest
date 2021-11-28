@@ -6,7 +6,7 @@
 using namespace std;
 
 
-int32_t main() {
+auto main() -> int32_t {
   std::ios_base::sync_with_stdio(false);
   std::cin.tie(nullptr);
 

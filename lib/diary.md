@@ -1,7 +1,5 @@
 # Notes to keep in mind
 
-**TODO:** Start new notes in a more helpful format
-
 ## General or ad hoc
 
 - Define priorities for greedy algorithms accurately
@@ -22,13 +20,13 @@
 
 - Scale (even logarithmic scale) big and small numbers, compare them roughly
 
-- Shrinking by encoding exploits the sparseness of data
+- Enumerating in ascending order exploits the sparseness of data
 
 - Pivoting divide-and-conquer may decrease complexity
 
 - Sliding window may become simple yet useful step
 
-- Distinguish building a solution from dynamics on its existence: once you have information on existence it may be simple to construct one (e.g. greedily)
+- Distinguish building a solution from dynamics on its existence: once you have information on existence it may be simple to construct one (e.g. greedy)
 
 - Dijkstra and bfs are flexible (multi-source and 0-1 (front\back) bfs)
 
@@ -47,6 +45,10 @@
 - Convex hull trick is quite ubiquitous
 
 - Implicit treap can be quite flexible for mass array operations
+
+- Quadrilateral inequality enables different optimisations (such as divide-and-conquer and lambda)
+
+- Do not shrink multiple steps: indexing and iterating over smallest characters _vs_ stack with size bounds
 
 ## Greedy
 

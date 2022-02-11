@@ -3,6 +3,14 @@
 // lets get funky
 using namespace std;
 
+/// @returns 0-based index of
+/// the left-most bit
+int LeftmostBit(int x) {
+  if (!x) {
+    return -1;
+  }
+  return 31 - __builtin_clz(x);
+}
 
 namespace Treap {
 

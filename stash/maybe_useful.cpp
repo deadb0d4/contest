@@ -30,15 +30,18 @@ int64_t ClosestDistance(vector<pair<int64_t, int64_t>>& points) {
   return curr_answer;
 }
 
-// Multi-dimensional vector for rare occasions.
+namespace multi_vec {
+
 template <class T, size_t n>
 struct VecS {
   typedef vector<typename VecS<T, n - 1>::type> type;
 };
+
 template <class T>
 struct VecS<T, 1> {
   typedef vector<T> type;
 };
+
 template <class T, size_t n>
 using Vec = typename VecS<T, n>::type;
 
@@ -46,10 +49,13 @@ template <class T>
 auto BuildVec(const T& val) {
   return T(val);
 }
+
 template <class T, class... SizeType>
 auto BuildVec(const T& val, size_t first, SizeType... rest) {
   return Vec<T, 1 + sizeof...(rest)>(first, BuildVec<T>(val, rest...));
 }
+
+}  // namespace multi_vec
 
 // Rabin-Karp
 struct Hasher {
@@ -500,4 +506,41 @@ template <class Ch, class Tr, class F, class S>
 std::basic_ostream<Ch, Tr> &operator << (
     std::basic_ostream<Ch, Tr> &os, const std::pair<F, S> &p) {
   return os << '(' << p.first << ', ' << p.second << ')';
+}
+
+template <typename AriphmeticType>
+class Uniform {
+ public:
+  template <typename T, typename Enable = void>
+  struct Distribution;
+
+  template <typename T>
+  struct Distribution<T, enable_if_t<is_integral_v<T>>> {
+    std::uniform_int_distribution<T> handle;
+    Distribution()
+        : handle(numeric_limits<T>::min(), numeric_limits<T>::max()) {}
+  };
+
+  template <typename T>
+  struct Distribution<T, enable_if_t<is_floating_point_v<T>>> {
+    std::uniform_real_distribution<T> handle;
+  };
+
+  Uniform(int64_t seed) : gen(seed), dist() {}
+
+  AriphmeticType Get() {
+    return dist.handle(gen);
+  }
+
+ private:
+  std::mt19937 gen;
+  Distribution<AriphmeticType> dist;
+};
+
+template <typename AriphmeticType>
+AriphmeticType Random() {
+  thread_local int64_t seed =
+      chrono::steady_clock::now().time_since_epoch().count();
+  thread_local Uniform<AriphmeticType> instance(seed);
+  return instance.Get();
 }

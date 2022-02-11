@@ -93,6 +93,7 @@ def prepare_job(filename, lang):
             'g++',
             '-std=c++17',
             '-g',
+            '-Wshadow',
             '-Wuninitialized',
             '-fsanitize=address,undefined',
             '-o', 'bin/' + bin_name, filename])

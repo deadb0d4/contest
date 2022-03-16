@@ -19,21 +19,21 @@ struct Node {
   const uint64_t p;
   int count;
   int value;
- 
+
   Node* left;
   Node* right;
- 
+
   Node(int v) : p(Random<uint64_t>()), count(1), value(v), left(nullptr), right(nullptr) {}
 };
- 
+
 int Size(Node* node) {
   return (node ? node->count : 0);
 }
- 
+
 void Update(Node* node) {
   node->count = Size(node->left) + Size(node->right) + 1;
 }
- 
+
 pair<Node*, Node*> Split(Node* node, int k) {
   if (k == 0) {
     return { nullptr, node };
@@ -52,11 +52,11 @@ pair<Node*, Node*> Split(Node* node, int k) {
   Update(node);
   return res;
 }
- 
+
 Node* Merge(Node* f, Node* s) {
   if (!f) return s;
   if (!s) return f;
- 
+
   Node* root = nullptr;
   if (f->p < s->p) {
     f->right = Merge(f->right, s);
@@ -70,7 +70,7 @@ Node* Merge(Node* f, Node* s) {
 }
 
 } // namespace Treap
- 
+
 //////////////////////////////////////////////////////////////////////////
 
 auto FirstSmallerRight(const vector<int>& vec) {
@@ -341,9 +341,7 @@ struct DSU {
   vector<int> p;
 
   DSU(int len) : count(len), r(len, 1), p(len) {
-    for (int i = 0; i < len; ++i) {
-      p[i] = i;
-    }
+    iota(begin(p), end(p), 0);
   }
 
   int Get(int x) {
@@ -517,12 +515,10 @@ struct MinSparseTable {
     for (int i = 0; i < vec.size(); ++i) {
       t[i].push_back(vec[i]);
     }
-    int k = 1;
-    while ((1 << k) <= vec.size()) {
+    for (int k = 1; (1 << k) <= vec.size(); ++k) {
       for (int i = 0; i + (1 << k) <= vec.size(); ++i) {
         t[i].push_back(min(t[i].back(), t[i + (1 << (k - 1))].back()));
       }
-      ++k;
     }
     for (int i = 0; i < vec.size(); ++i) {
       int k = 0;
@@ -533,8 +529,9 @@ struct MinSparseTable {
     }
   }
 
-  // min on [l, r)
+  // min on [l, r]
   int Query(int l, int r) {
+    ++r;
     int p = pt[r - l - 1];
     return min(t[l][p], t[r - (1 << p)][p]);
   }

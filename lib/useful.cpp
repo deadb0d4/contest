@@ -726,6 +726,7 @@ struct SplitMix64Hash {
   }
 };
 
+/// python2.7 impl. of `hash`
 struct PythonHash {
   static uint64_t string_hash(const std::string& str) {
     if (str.empty()) {
@@ -757,45 +758,18 @@ using string_hash_map = unordered_map<string, Value, PythonHash>;
 
 //////////////////////////////////////////////////////////////////////////
 
-template <typename AriphmeticType>
-class Uniform {
- public:
-  template <typename T, typename Enable = void>
-  struct Distribution;
-
-  template <typename T>
-  struct Distribution<
-        T, typename std::enable_if_t<std::is_integral<T>::value>> {
-    std::uniform_int_distribution<T> handle;
-
-    Distribution()
-        : handle(std::numeric_limits<T>::min(), std::numeric_limits<T>::max()) {
-    }
-  };
-
-  template <typename T>
-  struct Distribution<
-        T, typename std::enable_if_t<std::is_floating_point<T>::value>> {
-    std::uniform_real_distribution<T> handle;
-  };
-
-  Uniform(int64_t seed) : generator(seed), distribution() {}
-
-  AriphmeticType Get() {
-    return distribution.handle(generator);
-  }
-
-private:
-  std::mt19937 generator;
-  Distribution<AriphmeticType> distribution;
-};
-
-template <typename AriphmeticType> AriphmeticType Random() {
+template <class T>
+T Random(
+    T min = numeric_limits<T>::min(),
+    T max = numeric_limits<T>::max()) {
   thread_local int64_t seed =
-      std::chrono::steady_clock::now().time_since_epoch().count();
-  thread_local Uniform<AriphmeticType> instance(seed);
+      chrono::steady_clock::now().time_since_epoch().count();
+  thread_local mt19937 gen(seed);
 
-  return instance.Get();
+  if (is_floating_point<T>::value) {
+    return uniform_real_distribution<T>(min, max)(gen);
+  }
+  return uniform_int_distribution<T>(min, max)(gen);
 }
 
 //////////////////////////////////////////////////////////////////////////

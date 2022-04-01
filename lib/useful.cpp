@@ -197,24 +197,21 @@ int64_t SmPow(int64_t p, int64_t a) {
   return res;
 }
 
-// next divisor (beware cycling)
-void Inc(
-    int& d, int& nonzero_count, vector<int>& sv,
-    const vector<int>& pr,
-    const vector<int>& mx) {
-  int pos = 0;
-  while (pos < sv.size()) {
-    if (sv[pos] == mx[pos]) {
-      d /= SmPow(pr[pos], mx[pos]);
-      sv[pos++] = 0;
-      nonzero_count--;
-    } else {
-      d *= pr[pos];
-      sv[pos]++;
-      nonzero_count++;
-      return;
+bool NextDivisor(
+    int& d, vector<int>& sv,
+    const vector<int>& fv,
+    const vector<int>& dv) {
+  for (int pos = 0; pos < sv.size(); ++pos) {
+    if (sv[pos] == dv[pos]) {
+      d /= SmPow(fv[pos], dv[pos]);
+      sv[pos] = 0;
+      continue;
     }
+    d *= fv[pos];
+    ++sv[pos];
+    return true;
   }
+  return false;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -758,6 +755,7 @@ using string_hash_map = unordered_map<string, Value, PythonHash>;
 
 //////////////////////////////////////////////////////////////////////////
 
+/// uniform random from [min, max]
 template <class T>
 T Random(
     T min = numeric_limits<T>::min(),
@@ -766,7 +764,7 @@ T Random(
       chrono::steady_clock::now().time_since_epoch().count();
   thread_local mt19937 gen(seed);
 
-  if (is_floating_point<T>::value) {
+  if constexpr (is_floating_point<T>::value) {
     return uniform_real_distribution<T>(min, max)(gen);
   }
   return uniform_int_distribution<T>(min, max)(gen);

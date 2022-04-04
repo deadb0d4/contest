@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3
+#!/usr/bin/python3
 
 import argparse
 import collections
@@ -95,6 +95,7 @@ def prepare_job(filename, lang):
             '-g',
             '-Wshadow',
             '-Wuninitialized',
+            '-I./stash/include/',
             '-fsanitize=address,undefined',
             '-o', 'bin/' + bin_name, filename])
         if fp.returncode != 0:

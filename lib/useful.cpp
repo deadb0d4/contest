@@ -723,6 +723,9 @@ struct SplitMix64Hash {
   }
 };
 
+template <class Value>
+using integer_hash_map = unordered_map<int, Value, SplitMix64Hash>;
+
 /// python2.7 impl. of `hash`
 struct PythonHash {
   static uint64_t string_hash(const std::string& str) {
@@ -746,9 +749,6 @@ struct PythonHash {
     return string_hash(x + salt);
   }
 };
-
-template <class Value>
-using integer_hash_map = unordered_map<int, Value, SplitMix64Hash>;
 
 template <class Value>
 using string_hash_map = unordered_map<string, Value, PythonHash>;

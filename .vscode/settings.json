@@ -103,20 +103,12 @@
     "ranges": "cpp",
     "stop_token": "cpp"
   },
-  "python.pythonPath": "/usr/bin/python3",
-  "editor.quickSuggestions": false,
+  "editor.quickSuggestions": {
+    "comments": "off",
+    "strings": "off",
+    "other": "off"
+  },
   "editor.suggestOnTriggerCharacters": false,
-  // "C_Cpp.autocomplete": "Disabled",
-  // "C_Cpp.errorSquiggles": "Disabled",
-  // "C_Cpp.intelliSenseEngine": "Disabled",
-  // "clangd.arguments": [
-  //     "--log=verbose",
-  //     "--pretty",
-  //     "--background-index",
-  //     "--clang-tidy",
-  //     "--compile-commands-dir=/Users/ulyumdzhiev/workspace/code/contest/bin"
-  // ],
-  // "editor.tabSize": 2,
   "terminal.integrated.tabs.enabled": true,
   "workbench.activityBar.visible": false
 }

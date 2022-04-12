@@ -95,7 +95,8 @@ def prepare_job(filename, lang):
             '-g',
             '-Wshadow',
             '-Wuninitialized',
-            '-I./stash/include/',
+            '-DEBUG',
+            '-I./stash/include/',  # missing includes
             '-fsanitize=address,undefined',
             '-o', 'bin/' + bin_name, filename])
         if fp.returncode != 0:

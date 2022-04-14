@@ -1,6 +1,5 @@
 #ifndef EBUG
-#pragma GCC target( \
-  "sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,avx2,lzcnt,bmi,bmi2")
+#pragma GCC target("sse,sse2,avx2,bmi,bmi2,lzcnt,popcnt")
 #pragma GCC optimize("-O3,-funroll-loops,-march=native,-mtune=native")
 #endif
 

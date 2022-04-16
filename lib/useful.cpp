@@ -3,8 +3,66 @@
 // lets get funky
 using namespace std;
 
+
+/// @brief maximum size minimum weight algorithm
+/// maybe wrong!
+/// see also unweighted version
+/// https://leetcode.com/submissions/detail/680230964/
+int HungarianDense(
+    vector<vector<int>>& av) {
+  const int n = av.size();
+  const int m = av[0].size();
+  assert(n <= m);
+  // potentials
+  vector<int> lv(n), rv(m);
+  // matching from the right (column) side
+  vector<int> mv(m, -1);
+  // previous from the right in the Kuhn dfs
+  vector<int> prev(m, -1);
+  int res = 0;
+  for (int i = 0; i < n; ++i) {
+    vector<int> minv(m, kInf);
+    vector<bool> used(m, false);
+    int l = i;
+    int r = -1;
+    while (l != -1) {
+      int delta = kInf, nr = -1;
+      for (int j = 0; j < m; ++j) if (!used[j]) {
+        const int cur = av[l][j] - lv[l] - rv[j];
+        if (cur < minv[j]) {
+          minv[j] = cur;
+          prev[j] = r;
+        }
+        if (minv[j] < delta) {
+          delta = minv[j];
+          nr = j;
+        }
+      }
+      lv[i] += delta;
+      res += delta;
+      for (int j = 0; j < m; ++j) {
+        if (used[j]) {
+          lv[mv[j]] += delta;
+          rv[j] -= delta;
+        } else {
+          minv[j] -= delta;
+        }
+      }
+      r = nr;
+      l = mv[r];
+      used[r] = true;
+    }
+    while (r != -1) {
+      const int pr = prev[r];
+      mv[r] = (pr == -1 ? i : mv[pr]);
+      r = pr;
+    }
+  }
+  return res;
+}
+
+/// @brief the left-most bit
 /// @returns 0-based index of
-/// the left-most bit
 int LeftmostBit(int x) {
   if (!x) {
     return -1;

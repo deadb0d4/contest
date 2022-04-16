@@ -1,5 +1,10 @@
 # Competetive Programming Helper
 
+## Roadmap
+
+- [ ] Separate static tests and checker
+- [ ] Support stress testing + test generators
+
 ## Useful materials
 
 These are placed in `./lib/` see also `./stash/`'ed content.

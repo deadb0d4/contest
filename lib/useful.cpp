@@ -818,14 +818,17 @@ template <class T>
 T Random(
     T min = numeric_limits<T>::min(),
     T max = numeric_limits<T>::max()) {
+  static_assert(is_floating_point_v<T> || is_integral_v<T>);
   thread_local int64_t seed =
       chrono::steady_clock::now().time_since_epoch().count();
   thread_local mt19937 gen(seed);
 
-  if constexpr (is_floating_point<T>::value) {
+  if constexpr (is_floating_point_v<T>) {
     return uniform_real_distribution<T>(min, max)(gen);
+  } else if constexpr (is_integral_v<T>) {
+    return uniform_int_distribution<T>(min, max)(gen);
   }
-  return uniform_int_distribution<T>(min, max)(gen);
+  __builtin_unreachable();
 }
 
 //////////////////////////////////////////////////////////////////////////

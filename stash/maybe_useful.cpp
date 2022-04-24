@@ -1,10 +1,23 @@
-#pragma GCC target( \
-    "sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,avx2,lzcnt,bmi,bmi2")
+#ifndef EBUG
+#pragma GCC target("sse,sse2,avx2,bmi,bmi2,lzcnt,popcnt")
 #pragma GCC optimize("-O3,-funroll-loops,-march=native,-mtune=native")
+#endif
 
 #include <bits/stdc++.h>
 
 using namespace std;
+
+//////////////////////////////////////////////////////////////////////////
+
+struct {
+  template <class T> operator T() {
+    T x;
+    cin >> x;
+    return x;
+  }
+} in;
+
+//////////////////////////////////////////////////////////////////////////
 
 // Sliding set approach to closest pair of points
 // author: bicsi
@@ -34,7 +47,7 @@ int64_t ClosestDistance(vector<pair<int64_t, int64_t>>& points) {
   return curr_answer;
 }
 
-namespace multi_vec {
+//////////////////////////////////////////////////////////////////////////
 
 template <class T, size_t n>
 struct VecS {
@@ -59,7 +72,7 @@ auto BuildVec(const T& val, size_t first, SizeType... rest) {
   return Vec<T, 1 + sizeof...(rest)>(first, BuildVec<T>(val, rest...));
 }
 
-}  // namespace multi_vec
+//////////////////////////////////////////////////////////////////////////
 
 // Rabin-Karp
 struct Hasher {
@@ -155,6 +168,8 @@ vector<double> MedianSlidingWindow(vector<int> &nums, int k) {
 
   return vec;
 }
+
+//////////////////////////////////////////////////////////////////////////
 
 // Dynamic connectivity Offline
 struct DSU {

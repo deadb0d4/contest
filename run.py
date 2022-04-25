@@ -65,7 +65,7 @@ def diff_lines(lv, rv):
         ann.append(res)
     return err, ann
 
-MAX_LENGTH = 64
+MAX_LENGTH = 100
 TEST_DIR = 'test'
 CACHE_DIR = 'stash'
 

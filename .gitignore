@@ -11,3 +11,4 @@ bin/*
 test/buf/
 test/input/
 test/output/
+test/perf/

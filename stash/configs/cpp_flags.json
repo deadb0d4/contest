@@ -1,9 +1,16 @@
-[
-  "-std=c++17",
-  "-g",
-  "-Wshadow",
-  "-Wuninitialized",
-  "-DEBUG",
-  "-I./stash/include/",
-  "-fsanitize=address,undefined"
-]
+{
+  "test": [
+    "-std=c++17",
+    "-g",
+    "-Wshadow",
+    "-Wuninitialized",
+    "-DEBUG",
+    "-I./stash/include/",
+    "-fsanitize=address,undefined"
+  ],
+  "perf": [
+    "-O3",
+    "-std=c++17",
+    "-I./stash/include/"
+  ]
+}

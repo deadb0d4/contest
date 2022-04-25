@@ -3,8 +3,9 @@
 ## Roadmap
 
 - [x] ~~Separate static tests and checker~~ Instead, one tool to use
-- [ ] Support stress testing
+- [x] Support stress testing
 - [x] Test generators
+- [ ] l10n
 
 ## Useful materials
 

@@ -3,5 +3,7 @@
   "fout_name": "test/buf/out.txt",
   "ferr_name": "test/buf/err.txt",
   "input_dir": "test/input",
-  "output_dir": "test/output"
+  "output_dir": "test/output",
+  "perf_dir": "test/perf",
+  "time_cmd": "/usr/bin/time"
 }

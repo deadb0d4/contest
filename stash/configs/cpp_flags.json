@@ -1,0 +1,9 @@
+[
+  "-std=c++17",
+  "-g",
+  "-Wshadow",
+  "-Wuninitialized",
+  "-DEBUG",
+  "-I./stash/include/",
+  "-fsanitize=address,undefined"
+]

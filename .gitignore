@@ -1,7 +1,13 @@
 main.cpp
 easy.py
+
 .*
 !.vscode
 !.gitignore
-test/*
+
+__pycache__/
+
 bin/*
+test/buf/
+test/input/
+test/output/

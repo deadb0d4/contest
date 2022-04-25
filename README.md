@@ -2,8 +2,9 @@
 
 ## Roadmap
 
-- [ ] Separate static tests and checker
-- [ ] Support stress testing + test generators
+- [x] ~~Separate static tests and checker~~ Instead, one tool to use
+- [ ] Support stress testing
+- [x] Test generators
 
 ## Useful materials
 

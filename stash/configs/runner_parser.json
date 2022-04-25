@@ -1,0 +1,24 @@
+{
+  "--reset,-r": {
+    "action": "count",
+    "help": "reset workspace",
+    "default": 0
+  },
+  "--add_test,-t": {
+    "action": "count",
+    "help": "add test cases",
+    "default": 0
+  },
+  "--specific_test,-s": {
+    "help": "use only selected tests",
+    "nargs": "*"
+  },
+  "--gen,-g": {
+    "nargs": "?",
+    "help": "generator path"
+  },
+  "--dumb,-d": {
+    "nargs": "?",
+    "help": "dumb solution for generator"
+  }
+}

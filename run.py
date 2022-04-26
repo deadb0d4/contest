@@ -9,7 +9,6 @@ import fileinput
 import os
 import shutil
 import subprocess
-from typing import Optional
 
 from test.colorize import err_style, colorize
 from test.config import Config
@@ -65,17 +64,22 @@ def diff_lines(lv, rv):
 
 
 def reset_default_sources():
-    shutil.copyfile(os.path.join("stash", "blank.cpp"), "main.cpp")
+    jp = os.path.join
+    shutil.copyfile(jp("stash", "blank.cpp"), "main.cpp")
     open("easy.py", "w").close()
 
 
-def clean_dir(dir_name):
-    files = glob.glob(f"{dir_name}/*")
-    for f in files:
-        os.remove(f)
+def clean_dirs(dir_names):
+    for dir_name in dir_names:
+        files = glob.glob(f"{dir_name}/*")
+        for f in files:
+            if os.path.isfile(f):
+                os.remove(f)
+            else:
+                shutil.rmtree(f)
 
 
-def prepare_job(filename: str, perf: bool):
+def prepare_job(filename, perf):
     flags = config.cpp_flags["perf" if perf else "test"]
     lang = filename.split(".")[-1]
     if lang == "cpp":
@@ -91,14 +95,9 @@ def prepare_job(filename: str, perf: bool):
 
 
 def add_test(name):
-    subprocess.run(
-        [
-            "vim",
-            "-o",
-            os.path.join(input_dir, name + ".txt"),
-            os.path.join(output_dir, name + ".txt"),
-        ]
-    )
+    input_name = os.path.join(input_dir, f"{name}.txt")
+    output_name = os.path.join(output_dir, f"{name}.txt")
+    subprocess.run(["vim", "-o", input_name, output_name])
 
 
 def run_tests(job, tests):
@@ -140,12 +139,10 @@ def prep_parser():
     return parser.parse_args()
 
 
-def reset_workspace(level: int):
+def reset_workspace(level):
+    clean_dirs([input_dir, perf_dir, output_dir, config.runner["bin_dir"]])
     if level > 1:
         reset_default_sources()
-    clean_dir(input_dir)
-    clean_dir(perf_dir)
-    clean_dir(output_dir)
     subprocess.run(["clear"])
     print("Updated at", datetime.datetime.now().time())
 
@@ -155,36 +152,26 @@ def infer_next_test_name(dirname):
 
 
 def print_error_tests(test_results):
+    head_length = config.runner["diff_max_length"]
     for tr in test_results:
         if tr["status"] == "OK":
             continue
+        input_name = os.path.join(input_dir, tr["name"])
+        output_name = os.path.join(output_dir, tr["name"])
+
         print(f'-- {tr["name"]}: {tr["status"]}')
-        print(
-            "\n".join(
-                get_head(
-                    os.path.join(input_dir, tr["name"]),
-                    config.runner["diff_max_length"],
-                )
-            )
-        )
+        print("\n".join(get_head(input_name, head_length)))
         print("-- got:")
         for line in tr["cout"]:
             print(line)
         print("-- expected:")
-        print(
-            "\n".join(
-                get_head(
-                    os.path.join(output_dir, tr["name"]),
-                    config.runner["diff_max_length"],
-                )
-            )
-        )
+        print("\n".join(get_head(output_name, head_length)))
         print("-- cerr:")
         for line in tr["cerr"]:
             print(line)
 
 
-def generate_test(gen: str, dumb: str):
+def generate_test(gen, dumb):
     dumb_job = prepare_job(dumb, perf=True)
     for line in fileinput.input(files=("-",)):
         test_name = infer_next_test_name(input_dir) + ".txt"
@@ -195,7 +182,7 @@ def generate_test(gen: str, dumb: str):
                 subprocess.run(dumb_job, stdin=fin, stdout=fout)
 
 
-def generate_perf(gen: str):
+def generate_perf(gen):
     for line in fileinput.input(files=("-",)):
         test_name = infer_next_test_name(perf_dir) + ".txt"
         with open(os.path.join(perf_dir, test_name), "w") as fin:
@@ -211,7 +198,7 @@ def test_solution(source_filename, specific_test):
         else:
             print("Running job only...")
             subprocess.run(job)
-            quit()
+            return
 
     test_results = run_tests(job, tests)
 
@@ -232,41 +219,29 @@ def perf_solution(source_filename):
     for filename in tests:
         print(colorize(filename, ["yellow"]))
         with open(os.path.join(perf_dir, filename), "r") as fin:
-            res = subprocess.run(
-                job,
-                stdin=fin,
-                stdout=subprocess.DEVNULL,
-            )
+            devnull = subprocess.DEVNULL
+            res = subprocess.run(job, stdin=fin, stdout=devnull)
 
 
 def main():
     args = prep_parser()
-
     if args.reset > 0:
         reset_workspace(args.reset)
-        quit()
-
-    if args.add_test > 0:
+    elif args.add_test > 0:
         test_name = args.filename
         if test_name is None:
             for _ in range(args.add_test):
                 add_test(infer_next_test_name(input_dir))
         else:
             add_test(test_name)
-        quit()
-
-    if args.gen:
+    elif args.gen:
         if args.dumb is None:
             generate_perf(args.gen)
         else:
             generate_test(args.gen, args.dumb)
-        quit()
-
-    if args.filename is None:
+    elif args.filename is None:
         print("Provide source name")
-        quit()
-
-    if args.perf > 0:
+    elif args.perf > 0:
         perf_solution(args.filename)
     else:
         test_solution(args.filename, args.specific_test)

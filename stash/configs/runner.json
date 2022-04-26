@@ -5,5 +5,6 @@
   "input_dir": "test/input",
   "output_dir": "test/output",
   "perf_dir": "test/perf",
+  "bin_dir": "bin/",
   "time_cmd": "/usr/bin/time"
 }

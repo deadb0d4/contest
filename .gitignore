@@ -12,3 +12,5 @@ test/buf/
 test/input/
 test/output/
 test/perf/
+
+stash/gen.py

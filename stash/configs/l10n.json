@@ -1,0 +1,12 @@
+{
+  "no_filename_for_run": "Provide source name",
+  "updated_at": "Updated at {}",
+  "test_name_and_status": "-- {}: {}",
+  "test_got": "-- got:",
+  "test_exp": "-- expected:",
+  "test_cerr": "-- cerr:",
+  "gen_input_prompt": "Write input for {} here",
+  "run_job_only": "Running job only",
+  "tests_ok": "See no evil 🙈 ({} tests passed)",
+  "solution_copied": "(solution copied to the clipboard)"
+}

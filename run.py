@@ -12,12 +12,17 @@ import subprocess
 
 from test.colorize import err_style, colorize
 from test.config import Config
+from test.l10n import build_localizer
 
 
 config = Config("stash/configs")
 input_dir = config.runner["input_dir"]
 perf_dir = config.runner["perf_dir"]
 output_dir = config.runner["output_dir"]
+
+
+Localizer = build_localizer(config.l10n)
+l10n = Localizer()
 
 
 def get_head(filename, count):
@@ -79,9 +84,14 @@ def clean_dirs(dir_names):
                 shutil.rmtree(f)
 
 
+def get_lang(filename):
+    if "." in filename:
+        return filename.split(".")[-1]
+
+
 def prepare_job(filename, perf):
+    lang = get_lang(filename)
     flags = config.cpp_flags["perf" if perf else "test"]
-    lang = filename.split(".")[-1]
     if lang == "cpp":
         bin_name = filename.split(".")[0]
         fp = subprocess.run(["g++"] + flags + ["-o", f"bin/{bin_name}", filename])
@@ -91,7 +101,7 @@ def prepare_job(filename, perf):
     elif lang == "py":
         return ["python3", filename]
     else:
-        raise RuntimeError("Language is not supported: " + str(lang))
+        raise RuntimeError(f"{lang} is not supported")
 
 
 def add_test(name):
@@ -144,7 +154,7 @@ def reset_workspace(level):
     if level > 1:
         reset_default_sources()
     subprocess.run(["clear"])
-    print("Updated at", datetime.datetime.now().time())
+    print(l10n.updated_at(datetime.datetime.now().time()))
 
 
 def infer_next_test_name(dirname):
@@ -159,34 +169,42 @@ def print_error_tests(test_results):
         input_name = os.path.join(input_dir, tr["name"])
         output_name = os.path.join(output_dir, tr["name"])
 
-        print(f'-- {tr["name"]}: {tr["status"]}')
+        print(l10n.test_name_and_status(tr["name"], tr["status"]))
         print("\n".join(get_head(input_name, head_length)))
-        print("-- got:")
+        print(l10n.test_got())
         for line in tr["cout"]:
             print(line)
-        print("-- expected:")
+        print(l10n.test_exp())
         print("\n".join(get_head(output_name, head_length)))
-        print("-- cerr:")
+        print(l10n.test_cerr())
         for line in tr["cerr"]:
             print(line)
 
 
+def run_generator(gen, output_path):
+    generator_input = os.path.join(input_dir, "generator.txt")
+    with open(generator_input, "w") as f:
+        print(l10n.gen_input_prompt(gen), file=f)
+    subprocess.run(["vim", "-o", generator_input, gen])
+    gen_job = prepare_job(gen, perf=True)
+    with open(generator_input, "r") as fin:
+        with open(output_path, "w") as fout:
+            subprocess.run(gen_job, stdin=fin, stdout=fout)
+    os.remove(generator_input)
+
+
 def generate_test(gen, dumb):
+    test_name = f"{infer_next_test_name(input_dir)}.txt"
+    run_generator(gen, os.path.join(input_dir, test_name))
     dumb_job = prepare_job(dumb, perf=True)
-    for line in fileinput.input(files=("-",)):
-        test_name = infer_next_test_name(input_dir) + ".txt"
-        with open(os.path.join(input_dir, test_name), "w") as fin:
-            subprocess.run([gen], input=line.encode(), stdout=fin)
-        with open(os.path.join(output_dir, test_name), "w") as fout:
-            with open(os.path.join(input_dir, test_name), "r") as fin:
-                subprocess.run(dumb_job, stdin=fin, stdout=fout)
+    with open(os.path.join(output_dir, test_name), "w") as fout:
+        with open(os.path.join(input_dir, test_name), "r") as fin:
+            subprocess.run(dumb_job, stdin=fin, stdout=fout)
 
 
 def generate_perf(gen):
-    for line in fileinput.input(files=("-",)):
-        test_name = infer_next_test_name(perf_dir) + ".txt"
-        with open(os.path.join(perf_dir, test_name), "w") as fin:
-            subprocess.run([gen], input=line.encode(), stdout=fin)
+    test_name = f"{infer_next_test_name(perf_dir)}.txt"
+    run_generator(gen, os.path.join(perf_dir, test_name))
 
 
 def test_solution(source_filename, specific_test):
@@ -196,7 +214,7 @@ def test_solution(source_filename, specific_test):
         if len(specific_test) > 0:
             tests = set(tests) & set(x + ".txt" for x in specific_test)
         else:
-            print("Running job only...")
+            print(l10n.run_job_only())
             subprocess.run(job)
             return
 
@@ -207,10 +225,10 @@ def test_solution(source_filename, specific_test):
         print_error_tests(test_results)
         return
 
-    print(f"See no evil 🙈 ({len(test_results)} tests passed)")
+    print(l10n.tests_ok(len(test_results)))
     with open(source_filename, "r") as source:
         subprocess.run(["pbcopy"], stdin=source)
-    print("(solution copied to the clipboard)")
+    print(l10n.solution_copied())
 
 
 def perf_solution(source_filename):
@@ -240,7 +258,7 @@ def main():
         else:
             generate_test(args.gen, args.dumb)
     elif args.filename is None:
-        print("Provide source name")
+        print(err_style(l10n.no_filename_for_run()))
     elif args.perf > 0:
         perf_solution(args.filename)
     else:

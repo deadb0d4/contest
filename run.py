@@ -127,10 +127,8 @@ def run_tests(job, tests):
         if res.returncode != 0:
             tr["status"] = "RE"
         else:
-            err, ann = diff_lines(
-                tr["cout"],
-                get_head(os.path.join(output_dir, filename), diff_max_length),
-            )
+            exp = get_head(os.path.join(output_dir, filename), diff_max_length)
+            err, ann = diff_lines(tr["cout"], exp)
             if err:
                 tr["status"] = "WA"
                 tr["cout"] = ann
@@ -168,16 +166,17 @@ def print_error_tests(test_results):
             continue
         input_name = os.path.join(input_dir, tr["name"])
         output_name = os.path.join(output_dir, tr["name"])
-
-        print(l10n.test_name_and_status(tr["name"], tr["status"]))
-        print("\n".join(get_head(input_name, head_length)))
-        print(l10n.test_got())
-        for line in tr["cout"]:
-            print(line)
-        print(l10n.test_exp())
-        print("\n".join(get_head(output_name, head_length)))
-        print(l10n.test_cerr())
-        for line in tr["cerr"]:
+        message = (
+            [l10n.test_name_and_status(tr["name"], tr["status"])]
+            + get_head(input_name, head_length)
+            + [l10n.test_got()]
+            + tr["cout"]
+            + [l10n.test_exp()]
+            + get_head(output_name, head_length)
+            + [l10n.test_cerr()]
+            + tr["cerr"]
+        )
+        for line in message:
             print(line)
 
 

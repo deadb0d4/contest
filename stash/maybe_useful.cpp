@@ -9,13 +9,35 @@ using namespace std;
 
 //////////////////////////////////////////////////////////////////////////
 
-struct {
+inline namespace contest_io {
+
+using namespace std;
+
+struct _cin_t {
+  _cin_t() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+  }
+
   template <class T> operator T() {
-    T x;
-    cin >> x;
+    T x; cin >> x;
     return x;
   }
-} in;
+} cin;
+
+#ifdef EBUG
+#define CONTEST_MACRO_DEBUG 1
+#else
+#define CONTEST_MACRO_DEBUG 0
+#endif
+
+#define dout_if(on)      \
+if (!on) ;               \
+else cerr                \
+
+#define dout dout_if(CONTEST_MACRO_DEBUG)
+
+}  // inline namespace contest_io
 
 //////////////////////////////////////////////////////////////////////////
 

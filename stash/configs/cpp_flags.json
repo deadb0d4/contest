@@ -1,6 +1,6 @@
 {
   "test": [
-    "-std=c++17",
+    "-std=c++20",
     "-g",
     "-Wshadow",
     "-Wuninitialized",
@@ -10,7 +10,7 @@
   ],
   "perf": [
     "-O3",
-    "-std=c++17",
+    "-std=c++20",
     "-I./stash/include/"
   ]
 }

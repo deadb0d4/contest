@@ -2,24 +2,25 @@
 
 ## Roadmap
 
-- [x] ~~Separate static tests and checker~~ Instead, one tool to use
 - [x] Support stress testing
 - [x] Test generators
-- [ ] l10n
+- [x] l10n
 
 ## Useful materials
 
-These are placed in `./lib/` see also `./stash/`'ed content.
+These are placed in `{lib, stash}`.
 
-## Tool
+## Runner
 
-1. To add test:
+### To add test:
+
 ```
 ./run.py -t
 ```
 vim window will be opened and you need to fill input and expected output.
 
-2. Check solution:
+### Check solution:
+
 ```
 ./run.py main.cpp
 ```
@@ -27,22 +28,30 @@ output and expected will be compared line by line.
 
 **Remark:** Supported languages are `c++` and `python3`.
 
-3. Run solution without tests:
+### Run solution without tests:
+
 ```
 ./run.py main.cpp -s
 ```
 
-4. Run solution on tests 0 and 1:
+### Run solution on tests 0 and 1:
+
 ```
 ./run.py main.cpp -s 0 1
 ```
 
-5. Reset tests:
+### Reset tests:
+
 ```
 ./run.py -r
 ```
 
-6. Reset everything:
+### Reset everything:
+
 ```
 ./run.py -rr
 ```
+
+## Grunt
+
+`grunt.py` is a small script to use generator scripts for producting perf and test inputs. It isn't tested well so use it on your own risk. Short recipes are included in `grunt.py -h`.

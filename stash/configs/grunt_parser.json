@@ -1,0 +1,6 @@
+{
+  "--gen,-g": {
+    "help": "generator path",
+    "nargs": "?"
+  }
+}

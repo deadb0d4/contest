@@ -10,19 +10,7 @@ import os
 import shutil
 import subprocess
 
-from test.colorize import err_style, colorize
-from test.config import Config
-from test.l10n import build_localizer
-
-
-config = Config("stash/configs")
-input_dir = config.runner["input_dir"]
-perf_dir = config.runner["perf_dir"]
-output_dir = config.runner["output_dir"]
-
-
-Localizer = build_localizer(config.l10n)
-l10n = Localizer()
+from test.core import *
 
 
 def get_head(filename, count):
@@ -84,26 +72,6 @@ def clean_dirs(dir_names):
                 shutil.rmtree(f)
 
 
-def get_lang(filename):
-    if "." in filename:
-        return filename.split(".")[-1]
-
-
-def prepare_job(filename, perf):
-    lang = get_lang(filename)
-    flags = config.cpp_flags["perf" if perf else "test"]
-    if lang == "cpp":
-        bin_name = filename.split(".")[0]
-        fp = subprocess.run(["g++"] + flags + ["-o", f"bin/{bin_name}", filename])
-        if fp.returncode != 0:
-            raise RuntimeError("Compilation failed")
-        return ["./bin/" + bin_name]
-    elif lang == "py":
-        return ["python3", filename]
-    else:
-        raise RuntimeError(f"{lang} is not supported")
-
-
 def add_test(name):
     input_name = os.path.join(input_dir, f"{name}.txt")
     output_name = os.path.join(output_dir, f"{name}.txt")
@@ -155,10 +123,6 @@ def reset_workspace(level):
     print(l10n.updated_at(datetime.datetime.now().time()))
 
 
-def infer_next_test_name(dirname):
-    return str(sum(1 for filename in os.listdir(dirname)))
-
-
 def print_error_tests(test_results):
     head_length = config.runner["diff_max_length"]
     for tr in test_results:
@@ -178,32 +142,6 @@ def print_error_tests(test_results):
         )
         for line in message:
             print(line)
-
-
-def run_generator(gen, output_path):
-    generator_input = os.path.join(input_dir, "generator.txt")
-    with open(generator_input, "w") as f:
-        print(l10n.gen_input_prompt(gen), file=f)
-    subprocess.run(["vim", "-o", generator_input, gen])
-    gen_job = prepare_job(gen, perf=True)
-    with open(generator_input, "r") as fin:
-        with open(output_path, "w") as fout:
-            subprocess.run(gen_job, stdin=fin, stdout=fout)
-    os.remove(generator_input)
-
-
-def generate_test(gen, dumb):
-    test_name = f"{infer_next_test_name(input_dir)}.txt"
-    run_generator(gen, os.path.join(input_dir, test_name))
-    dumb_job = prepare_job(dumb, perf=True)
-    with open(os.path.join(output_dir, test_name), "w") as fout:
-        with open(os.path.join(input_dir, test_name), "r") as fin:
-            subprocess.run(dumb_job, stdin=fin, stdout=fout)
-
-
-def generate_perf(gen):
-    test_name = f"{infer_next_test_name(perf_dir)}.txt"
-    run_generator(gen, os.path.join(perf_dir, test_name))
 
 
 def test_solution(source_filename, specific_test):
@@ -230,16 +168,6 @@ def test_solution(source_filename, specific_test):
     print(l10n.solution_copied())
 
 
-def perf_solution(source_filename):
-    job = [config.runner["time_cmd"]] + prepare_job(source_filename, perf=True)
-    tests = os.listdir(perf_dir)
-    for filename in tests:
-        print(colorize(filename, ["yellow"]))
-        with open(os.path.join(perf_dir, filename), "r") as fin:
-            devnull = subprocess.DEVNULL
-            res = subprocess.run(job, stdin=fin, stdout=devnull)
-
-
 def main():
     args = prep_parser()
     if args.reset > 0:
@@ -251,15 +179,8 @@ def main():
                 add_test(infer_next_test_name(input_dir))
         else:
             add_test(test_name)
-    elif args.gen:
-        if args.dumb is None:
-            generate_perf(args.gen)
-        else:
-            generate_test(args.gen, args.dumb)
     elif args.filename is None:
         print(err_style(l10n.no_filename_for_run()))
-    elif args.perf > 0:
-        perf_solution(args.filename)
     else:
         test_solution(args.filename, args.specific_test)
 

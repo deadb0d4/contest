@@ -14,3 +14,7 @@ def colorize(x, cs):
 
 def err_style(x):
     return colorize(x, ["red", "bold"])
+
+
+def warn_style(x):
+    return colorize(x, ["yellow"])

@@ -12,18 +12,5 @@
   "--specific_test,-s": {
     "help": "use only selected tests",
     "nargs": "*"
-  },
-  "--gen,-g": {
-    "help": "generator path",
-    "nargs": "?"
-  },
-  "--dumb,-d": {
-    "help": "dumb solution for generator",
-    "nargs": "?"
-  },
-  "--perf,-p": {
-    "help": "run perf inputs and measure time",
-    "action": "count",
-    "default": 0
   }
 }

@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 import argparse
-import collections
 import datetime
 import glob
 import itertools
@@ -100,7 +99,7 @@ def prepare_job(filename, lang):
         bin_name = filename.split(".")[0]
         fp = subprocess.run(
             [
-                "g++",
+                "clang++",
                 "-std=c++17",
                 "-g",
                 "-Wshadow",
@@ -109,13 +108,13 @@ def prepare_job(filename, lang):
                 "-I./stash/include/",  # missing includes
                 "-fsanitize=address,undefined",
                 "-o",
-                "bin/" + bin_name,
+                "build/" + bin_name,
                 filename,
             ]
         )
         if fp.returncode != 0:
             raise RuntimeError("Compilation failed")
-        return ["./bin/" + bin_name]
+        return ["./build/" + bin_name]
     elif lang == "py":
         return ["python3", filename]
     else:

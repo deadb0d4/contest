@@ -4,4 +4,4 @@ easy.py
 !.vscode
 !.gitignore
 test/*
-bin/*
+build/*
